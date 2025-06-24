@@ -33,7 +33,7 @@
 
 **Background Event Processing & System Integrity Service**
 
-BEPSIS is a custom internal mech-themed janitor monitoring agent for PostgreSQL and FastAPI-based services. It passively watches for early signs of degradation, inefficiency, or chaos — and reports, logs, or (eventually) *annihilates* problematic patterns in your stack.
+BEPSIS is a custom internal mech-themed janitor monitoring agent for PostgreSQL and FastAPI-based services. It passively watches for early signs of degradation, inefficiency, or chaos and reports, logs, or (eventually) *annihilates* problematic patterns in your stack.
 
 > "Initiating take data out back to look at the flowers protocol"
 
