@@ -41,9 +41,9 @@ BEPSIS is a custom internal mech-themed janitor monitoring agent for PostgreSQL 
 
 ## What BEPSIS Does
 
-BEPSIS initially is a passive **monitoring and alerting service**, with future plans for **automated intervention**.
+BEPSIS initially is a passive **monitoring and alerting service**, with future plans for **automated intervention** alongside **Chaos Mode**. In **Chaos Mode**, BEPSIS navigates your backend stack shutting off services randomly and at his own whim. We will never truly understand how or why BEPSIS chooses a service, but you can learn more about your app and how it handles unexpected crashes.
 
-It currently focuses on two main areas:
+BEPSIS currently focuses on two main areas:
 
 ### PostgreSQL Monitoring
 
@@ -90,6 +90,7 @@ BEPSIS is designed to be:
 - Slack/webhook alert integration
 - Task system for safe repair jobs
 - Vacuum Droid personality mode™
+- Chaos Mode - BEPSIS navigates your stack in Prod and shuts off services randomly to force crashes
 
 ---
 
