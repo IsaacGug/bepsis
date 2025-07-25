@@ -14,9 +14,16 @@ jobs:
     if: github.event.issue.pull_request && contains(github.event.comment.body, '.amplifyapp.com')
     runs-on: ubuntu-latest
     steps:
-      - name: 'Delete all Amplify and Haast comments'
+      - name: 'Generate GitHub App Token'
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.BEPSIS_BOT_APP_ID }}
+          private-key: ${{ secrets.BEPSIS_PRIVATE_KEY }}
+  
+      - name: 'Delete all Amplify comments'
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
           PR_NUMBER: ${{ github.event.issue.number }}
         run: |
           echo "Amplify comment detected. Cleaning up all related comments."
@@ -24,7 +31,7 @@ jobs:
           # Get all comments for this PR and filter for Amplify or comments
           comments=$(gh api /repos/${{ github.repository }}/issues/${PR_NUMBER}/comments --jq '
             .[] |
-            select(.body | contains(".amplifyapp.com") or contains("brought to you by the Devops team")) |
+            select(.body | contains(".amplifyapp.com") |
             .id
           ')
 
@@ -40,7 +47,7 @@ jobs:
 
       - name: 'Check if our comment already exists'
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
           PR_NUMBER: ${{ github.event.issue.number }}
         id: check-comment
         run: |
@@ -58,14 +65,6 @@ jobs:
             echo "No existing comment found. Will create new one."
             echo "skip_comment=false" >> $GITHUB_OUTPUT
           fi
-          
-      - name: 'Generate GitHub App Token'
-        if: steps.check-comment.outputs.skip_comment == 'false'
-        id: app-token
-        uses: actions/create-github-app-token@v1
-        with:
-          app-id: ${{ secrets.BEPSIS_BOT_APP_ID }}
-          private-key: ${{ secrets.BEPSIS_PRIVATE_KEY }}
 
       - name: 'Create fresh custom comment'
         if: steps.check-comment.outputs.skip_comment == 'false'
