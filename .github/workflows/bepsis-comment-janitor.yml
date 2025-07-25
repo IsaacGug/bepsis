@@ -31,7 +31,7 @@ jobs:
           # Get all comments for this PR and filter for Amplify or comments
           comments=$(gh api /repos/${{ github.repository }}/issues/${PR_NUMBER}/comments --jq '
             .[] |
-            select(.body | contains(".amplifyapp.com") |
+            select(.body | contains(".amplifyapp.com")) |
             .id
           ')
 
