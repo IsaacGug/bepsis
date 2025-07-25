@@ -37,7 +37,30 @@ jobs:
           done
 
           echo "All Amplify comments deleted."
+
+      - name: 'Check if our comment already exists'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.issue.number }}
+        id: check-comment
+        run: |
+          # Check if our comment already exists
+          existing_comment=$(gh api /repos/${{ github.repository }}/issues/${PR_NUMBER}/comments --jq '
+            .[] |
+            select(.body | contains("Amplify Preview Ready")) |
+            .id
+          ' | head -1)
+          
+          if [ ! -z "$existing_comment" ]; then
+            echo "Our comment already exists (ID: $existing_comment). Exiting early."
+            echo "skip_comment=true" >> $GITHUB_OUTPUT
+          else
+            echo "No existing comment found. Will create new one."
+            echo "skip_comment=false" >> $GITHUB_OUTPUT
+          fi
+          
       - name: 'Generate GitHub App Token'
+        if: steps.check-comment.outputs.skip_comment == 'false'
         id: app-token
         uses: actions/create-github-app-token@v1
         with:
@@ -45,6 +68,7 @@ jobs:
           private-key: ${{ secrets.BEPSIS_PRIVATE_KEY }}
 
       - name: 'Create fresh custom comment'
+        if: steps.check-comment.outputs.skip_comment == 'false'
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
           PR_NUMBER: ${{ github.event.issue.number }}
